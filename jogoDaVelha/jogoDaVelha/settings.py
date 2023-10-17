@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    'daphne',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 # ASGI application
-ASGI_APPLICATION = "jogoDaVelha.jogoDaVelha.asgi.application"
+ASGI_APPLICATION = "jogoDaVelha.asgi.application"
 
 # Set the channel layer backend
 CHANNEL_LAYERS = {
