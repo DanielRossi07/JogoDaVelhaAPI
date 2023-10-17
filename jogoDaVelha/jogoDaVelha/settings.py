@@ -31,14 +31,27 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'api',
 ]
+
+# ASGI application
+ASGI_APPLICATION = "jogoDaVelha.jogoDaVelha.asgi.application"
+
+# Set the channel layer backend
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"  # For development purposes
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

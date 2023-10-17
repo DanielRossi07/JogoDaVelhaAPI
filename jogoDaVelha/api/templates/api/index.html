@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <title>Tic-Tac-Toe Player Setup</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Player Setup
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Player Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="piece" class="form-label">Tic-Tac-Toe Piece Type</label>
+                                <select class="form-select" id="piece" name="piece" required>
+                                    <option value="X">X</option>
+                                    <option value="O">O</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Start Game</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let url = `ws://${window.location.host}/ws/tic-tac-toe-game/`;
+
+    const socket = new WebSocket(url);
+
+    socket.onopen = function (event) {
+      console.log("WebSocket connection opened.");
+    };
+
+    socket.onmessage = function (event) {
+      // Handle incoming WebSocket messages (game updates) here.
+      const data = JSON.parse(event.data);
+      console.log("Message received");
+      // Implement logic to update your game UI based on the received data.
+    };
+
+    socket.onclose = function (event) {
+      console.log("WebSocket connection closed.");
+    };
+  });
+</script>
