@@ -1,5 +1,5 @@
-from board import Board
-from player import Player
+from .board import Board
+from .player import Player
 from random import randint
 
 
@@ -22,20 +22,19 @@ class GameLogic:
             self.next_player()
             self.current_player.play()
 
-            while not self.register_play():
-                if not self.current_player.is_computer:
-                    print("Essa casa já está ocupada. Escolha outra...\n")
-                self.current_player.play()
+            while not self.current_player.has_played:
+                pass
 
-            print(f"{self.current_player.name} jogou...\n\n")
+            while not self.register_play():
+                self.current_player.play()
 
             self.verify_if_winner_or_tie()
 
+            self.current_player.has_played = False
+
             if self.winner:
-                print(f"The winner is: {self.winner.name}")
                 stop = True
             if self.tie:
-                print("It is a tie!")
                 stop = True
 
     def draw_player(self):

@@ -1,5 +1,5 @@
-from boardPosition import BoardPosition
-from pieceType import PieceType
+from .boardPosition import BoardPosition
+from .pieceType import PieceType
 
 
 class Piece:

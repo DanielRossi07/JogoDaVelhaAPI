@@ -1,6 +1,6 @@
-from piece import Piece
-from pieceType import PieceType
-from boardPosition import BoardPosition
+from .piece import Piece
+from .pieceType import PieceType
+from .boardPosition import BoardPosition
 
 import copy
 

@@ -16,15 +16,15 @@
                         Player Setup
                     </div>
                     <div class="card-body">
-                        <form method="post">
+                        <form method="post" id="form">
                             {% csrf_token %}
                             <div class="mb-3">
-                                <label for="name" class="form-label">Player Name</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                                <label for="PlayerName" class="form-label">Player Name</label>
+                                <input type="text" class="form-control" id="playerName" name="PlayerName" placeholder="Enter your name" required>
                             </div>
                             <div class="mb-3">
-                                <label for="piece" class="form-label">Tic-Tac-Toe Piece Type</label>
-                                <select class="form-select" id="piece" name="piece" required>
+                                <label for="playerType" class="form-label">Tic-Tac-Toe Piece Type</label>
+                                <select class="form-select" id="playerType" name="playerType" required>
                                     <option value="X">X</option>
                                     <option value="O">O</option>
                                 </select>
@@ -47,16 +47,25 @@
 
     const socket = new WebSocket(url);
 
-    socket.onopen = function (event) {
-      console.log("WebSocket connection opened.");
+    socket.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      console.log(data);
     };
 
-    socket.onmessage = function (event) {
-      // Handle incoming WebSocket messages (game updates) here.
-      const data = JSON.parse(event.data);
-      console.log("Message received");
-      // Implement logic to update your game UI based on the received data.
-    };
+    var form = document.getElementById('form');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        var playerName = document.getElementById('playerName').value;
+        var playerType = document.getElementById('playerType').value;
+
+        var startData = JSON.stringify({
+            'type': "player_info",
+            'playerName': playerName,
+            'playerType': playerType
+        });
+        socket.send(startData);
+        form.reset();
+    });
 
     socket.onclose = function (event) {
       console.log("WebSocket connection closed.");
