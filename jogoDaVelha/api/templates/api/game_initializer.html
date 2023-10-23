@@ -1,0 +1,25 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Player Setup
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="PlayerName" class="form-label">Player Name</label>
+                        <input type="text" class="form-control" id="playerName" name="PlayerName" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="playerType" class="form-label">Tic-Tac-Toe Piece Type</label>
+                        <select class="form-select" id="playerType" name="playerType" required>
+                            <option value="X">X</option>
+                            <option value="O">O</option>
+                        </select>
+                    </div>
+                    <button onclick="getPlayerInfo(event)" class="btn btn-primary">Start Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

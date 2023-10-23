@@ -64,3 +64,9 @@ class Board:
     @property
     def board(self):
         return copy.deepcopy(self.__board)
+
+    @property
+    def serialize_board(self):
+        # Convert the board to a serializable format
+        serialized_board = [[piece.type.value for piece in row] for row in self.__board]
+        return serialized_board

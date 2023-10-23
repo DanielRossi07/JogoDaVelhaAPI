@@ -1,3 +1,6 @@
+import json
+import time
+
 from .board import Board
 from .player import Player
 from random import randint
@@ -7,6 +10,8 @@ class GameLogic:
     current_player = None
     winner = False
     tie = False
+    game_over = False
+    end_type = None
 
     def __init__(self, player1: Player, player2: Player, game_board: Board):
         self.player1 = player1
@@ -16,26 +21,34 @@ class GameLogic:
 
     def start(self):
         self.draw_player()
-        stop = False
 
-        while not stop:
-            self.next_player()
+    def play(self):
+        print("Choosing first player")
+
+        self.next_player()
+
+        if self.current_player.is_computer:
             self.current_player.play()
 
-            while not self.current_player.has_played:
-                pass
-
-            while not self.register_play():
+        if not self.register_play():
+            if self.current_player.is_computer:
+                while not self.register_play():
+                    self.current_player.play()
+            else:
                 self.current_player.play()
+                self.current_player.valid_move = False
+                return self.get_gamestatus()
 
-            self.verify_if_winner_or_tie()
+        self.verify_if_winner_or_tie()
 
-            self.current_player.has_played = False
+        if self.winner:
+            self.end_type = 'win'
+            self.game_over = True
+        if self.tie:
+            self.end_type = 'tie'
+            self.game_over = True
 
-            if self.winner:
-                stop = True
-            if self.tie:
-                stop = True
+        return self.get_gamestatus()
 
     def draw_player(self):
         number = randint(0, 1)
@@ -106,3 +119,30 @@ class GameLogic:
 
         self.game_board.add_piece_to_board(self.current_player.current_piece)
         return True
+
+    def get_gamestatus(self):
+        print("Send GameStatus")
+
+        is_over = self.game_over
+        end_type = self.end_type
+        current_payer = self.current_player.name
+        is_valid_move = self.current_player.valid_move
+        board = self.game_board.serialize_board
+        player_type = self.current_player.pieceType.value
+        current_move_row = None
+        current_move_col = None
+        if self.current_player.current_piece:
+            current_move_row = self.current_player.current_piece.position.row
+            current_move_col = self.current_player.current_piece.position.col
+
+        return json.dumps({
+            'type': 'gamestatus',
+            'is_over': is_over,
+            'end_type': end_type,
+            'current_payer': current_payer,
+            'is_valid_move': is_valid_move,
+            'board': board,
+            'player_type': player_type,
+            'current_move_row': current_move_row,
+            'current_move_col': current_move_col
+        })

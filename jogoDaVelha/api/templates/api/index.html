@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,67 +7,77 @@
     <title>Tic-Tac-Toe Player Setup</title>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        Player Setup
-                    </div>
-                    <div class="card-body">
-                        <form method="post" id="form">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="PlayerName" class="form-label">Player Name</label>
-                                <input type="text" class="form-control" id="playerName" name="PlayerName" placeholder="Enter your name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="playerType" class="form-label">Tic-Tac-Toe Piece Type</label>
-                                <select class="form-select" id="playerType" name="playerType" required>
-                                    <option value="X">X</option>
-                                    <option value="O">O</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Start Game</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="template_body">
+        {% include "api/game_initializer.html" %}
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let url = `ws://${window.location.host}/ws/tic-tac-toe-game/`;
+const gameAPI = {
+    socket: new WebSocket(`ws://${window.location.host}/ws/tic-tac-toe-game/`),
+};
 
-    const socket = new WebSocket(url);
+document.addEventListener("DOMContentLoaded", function () {
+	gameAPI.socket.onopen = function (event) {
+		console.log("WebSocket connected.")
+	}
 
-    socket.onmessage = function (event) {
-      const data = JSON.parse(event.data);
-      console.log(data);
+    gameAPI.socket.onmessage = function (event) {
+        var template_body = document.getElementById('template_body');
+        var serverMessage = JSON.parse(event.data);
+        console.log(serverMessage);
+
+        if (serverMessage.type == "gamestatus"){
+            updateBoard(serverMessage);
+        }else{
+			template_body.innerHTML = serverMessage.template;
+		}
+
     };
 
-    var form = document.getElementById('form');
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        var playerName = document.getElementById('playerName').value;
-        var playerType = document.getElementById('playerType').value;
+    gameAPI.socket.onclose = function (event) {
+        console.log("WebSocket connection closed.");
+    };
+});
 
-        var startData = JSON.stringify({
-            'type': "player_info",
-            'playerName': playerName,
-            'playerType': playerType
-        });
-        socket.send(startData);
-        form.reset();
+function getPlayerInfo(event){
+    var playerName = document.getElementById('playerName').value;
+    var playerType = document.getElementById('playerType').value;
+
+    var playerInfo = JSON.stringify({
+        'type': "player_info",
+        'playerName': playerName,
+        'playerType': playerType
     });
 
-    socket.onclose = function (event) {
-      console.log("WebSocket connection closed.");
-    };
-  });
+    gameAPI.socket.send(playerInfo);
+}
+
+function getPlayerMove(event){
+    var clicked_square = event.target.dataset;
+
+    var row = clicked_square.row;
+    var col = clicked_square.col;
+
+    var playerMove = JSON.stringify({
+        'type': "play",
+        'row': row,
+        'col': col
+    });
+
+    gameAPI.socket.send(playerMove);
+}
+
+function updateBoard(serverMessage){
+    var row = serverMessage.current_move_row;
+    var col = serverMessage.current_move_col;
+    var playerType = serverMessage.player_type;
+
+    var board_square = document.querySelector(`[data-position="${row}, ${col}"]`);
+    if (board_square){
+        board_square.textContent = playerType;
+    }
+}
 </script>

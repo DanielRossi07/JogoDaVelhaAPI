@@ -8,11 +8,12 @@ class Game:
     player: Player
     computer: Player
 
-    def __init__(self):
+    def __init__(self, player_name, player_type, socket):
+        self.socket = socket
         self.board = Board()
-
-    def create_player(self, player_name: str, player_type: str, socket):
-        self.player = Player(player_name, player_type, socket)
+        self.player = Player(player_name, player_type)
+        self.computer = self.create_computer()
+        self.game_logic = GameLogic(self.player, self.computer, self.board, self.socket)
 
     def create_computer(self):
         if self.player.pieceType == PieceType.x:
@@ -20,11 +21,10 @@ class Game:
         else:
             computer_type = "X"
 
-        self.computer = ComputerPlayer("Computer", computer_type)
+        return ComputerPlayer("Computer", computer_type)
 
-    def start(self):
-        self.create_computer()
-        GameLogic(self.player, self.computer, self.board)
+    def make_a_move(self, row, col):
+        self.game_logic.current_player.make_a_move(row, col)
 
     @staticmethod
     def validate_player_type(_input: str) -> str or None:
@@ -33,6 +33,6 @@ class Game:
             return None
         return _input
 
+    def end_game(self):
+        self.game_logic.stop = True
 
-if __name__ == "__main__":
-    game = Game()
